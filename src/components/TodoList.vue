@@ -27,9 +27,8 @@ export default {
 
 <style>
 .todo-list {
-  width: 90%;
-  height: 500px;
-  margin: auto;
+  width: 100%;
+  height: calc(100% - 50px);
   border: 2px solid;
   margin-top: 10px;
   display: flex;

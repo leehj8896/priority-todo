@@ -28,12 +28,11 @@ export default {
 
 <style>
 .add-todo {
-  width: 90%;
+  width: 100%;
   height: 30px;
   border: 1px solid blue;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

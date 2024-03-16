@@ -3,8 +3,10 @@
     <div class="title">
       <p>My Todo List</p>
     </div>
-    <add-todo v-on:add-todo="addTodo"/>
-    <todo-list v-bind:todo-list="todoList"/>
+    <div class="main-content">
+      <add-todo v-on:add-todo="addTodo"/>
+      <todo-list v-bind:todo-list="todoList"/>
+    </div>
   </div>
 </template>
 
@@ -44,16 +46,30 @@ body {
   margin: 0;
   overflow: hidden;
 }
+div, p {
+  box-sizing: border-box;
+}
 .container {
+  width: 100vw;
+  height: 100vh;
 }
 .title {
-  margin: auto;
+  width: 100%;
+  height: 20%;
   background-color: rgb(255, 197, 110);
   border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .title p {
   text-align: center;
   font-size: 3rem;
+}
+.main-content {
+  padding: 10px;
+  width: 100%;
+  height: 80%;
 }
 .input-section {
   box-sizing: border-box;
