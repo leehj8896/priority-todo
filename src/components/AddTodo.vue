@@ -1,7 +1,7 @@
 <template>
   <div class="add-todo">
     <input class="input-text" type="text" v-model="inputValue">
-    <input class="add-btn" type="button" value="Add" v-on:click="onClickAdd">
+    <input class="add-btn" type="button" value="Add" v-on:click="addTodo">
   </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
     }
   },
   methods: {
-    onClickAdd() {
+    addTodo() {
       console.log('AddTodo: onClickAdd')
       this.$emit('add-todo', this.inputValue)
       this.inputValue = ''

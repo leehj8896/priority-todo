@@ -5,7 +5,7 @@
     </div>
     <div class="main-content">
       <add-todo v-on:add-todo="addTodo"/>
-      <todo-list v-bind:todo-list="todoList"/>
+      <todo-list v-bind:todo-list="todoList" v-on:remove-todo="removeTodo"/>
     </div>
   </div>
 </template>
@@ -32,10 +32,19 @@ export default {
       console.log(`inputValue: ${inputValue}`)
       if (!inputValue) return
       this.todoList.push({
+        idx: this.todoList.length > 0
+          ? Math.max(...this.todoList.map((item) => item.idx)) + 1
+          : 1,
         title: inputValue,
-        done: true
+        done: false
       })
-      console.log(`this.todoList: ${JSON.stringify(this.todoList)}`)
+      console.log('this.todoList', this.todoList)
+    },
+    removeTodo(todoItem) {
+      console.log('App removeTodo')
+      console.log('todoItem', todoItem)
+      this.todoList = this.todoList.filter((item) => item.idx !== todoItem.idx)
+      console.log('this.todoList', this.todoList)
     }
   },
 }
