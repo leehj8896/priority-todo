@@ -4,4 +4,5 @@ export interface Todo {
 	date: string
   description: string
   done: boolean
+  priority: number
 }

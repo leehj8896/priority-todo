@@ -1,8 +1,9 @@
 <template>
   <div class="todo-list">
-    <div class="todo-item"
+    <div
       v-for="(item, i) in todoList"
       v-bind:key="`todo${i}`"
+      v-bind:class="`todo-item`"
     >
       <p>{{ item.title }}</p>
       <input type="checkbox" v-if="item.checked" checked>
@@ -42,10 +43,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-content: center;
-  gap: 3px;
+  gap: 0px;
 }
 .todo-item {
-  border: 1px solid red;
+  border: 1px solid grey;
   height: 60px;
   display: flex;
   flex-direction: row;

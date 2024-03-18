@@ -27,17 +27,34 @@ export default {
     }
   },
   methods: {
-    addTodo(inputValue) {
+    addTodo(todoInput) {
       console.log('App: addTodo')
-      console.log(`inputValue: ${inputValue}`)
-      if (!inputValue) return
-      this.todoList.push({
-        idx: this.todoList.length > 0
-          ? Math.max(...this.todoList.map((item) => item.idx)) + 1
-          : 1,
-        title: inputValue,
+      console.log(`todoInput: ${todoInput}`)
+      const { title, priority } = todoInput
+      if (!title) return
+      const newItem = {
+        idx: this.todoList.length > 0 ? 
+          Math.max(...this.todoList.map((item) => item.idx)) + 1 :
+          1,
+        title,
+        priority,
         done: false
-      })
+      }
+      if (this.todoList.length === 0) {
+        this.todoList.push(newItem)
+      } else {
+        let finished = false
+        for (let i = 0; i < this.todoList.length; i++) {
+          if (this.todoList[i].priority < priority) {
+            continue
+          } else {
+            this.todoList.splice(i, 0, newItem)
+            finished = true
+            break
+          }
+        }
+        if (!finished) this.todoList.push(newItem)
+      }
       console.log('this.todoList', this.todoList)
     },
     removeTodo(todoItem) {

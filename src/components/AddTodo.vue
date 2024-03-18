@@ -1,6 +1,7 @@
 <template>
   <div class="add-todo">
-    <input class="input-text" type="text" v-model="inputValue">
+    <input class="input-text" type="text" v-model="inputTitle">
+    <input class="input-priority" type="text" v-model="priority">
     <input class="add-btn" type="button" value="Add" v-on:click="addTodo">
   </div>
 </template>
@@ -13,14 +14,18 @@ export default {
   },
   data() {
     return {
-      inputValue: ''
+      inputTitle: '',
+      priority: 0,
     }
   },
   methods: {
     addTodo() {
       console.log('AddTodo: onClickAdd')
-      this.$emit('add-todo', this.inputValue)
-      this.inputValue = ''
+      this.$emit('add-todo', {
+        title: this.inputTitle,
+        priority: parseInt(this.priority),
+      })
+      this.inputTitle = ''
     }
   },
 }
@@ -38,9 +43,13 @@ export default {
   justify-content: space-between;
 }
 .input-text {
-  flex-basis: 80%;
+  flex-basis: 80%;  
+}
+.input-priority {
+  width: 40px;
+  padding: 0;
 }
 .add-btn {
-  flex-basis: 20%;
+  width: 40px;
 }
 </style>
