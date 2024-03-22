@@ -15,18 +15,24 @@ export default {
   data() {
     return {
       inputTitle: '',
-      priority: 0,
+      priority: '',
     }
   },
   methods: {
+    isNumericString(str) {
+      return /^\d+$/.test(str);
+    },
     addTodo() {
       console.log('AddTodo: onClickAdd')
-      this.$emit('add-todo', {
-        title: this.inputTitle,
-        priority: parseInt(this.priority),
-      })
-      this.inputTitle = ''
-    }
+      if (this.inputTitle && this.isNumericString(this.priority)) {
+        this.$emit('add-todo', {
+          title: this.inputTitle,
+          priority: parseInt(this.priority),
+        })
+        this.inputTitle = ''
+        this.priority = ''
+      }
+    },
   },
 }
 </script>
