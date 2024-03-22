@@ -5,9 +5,8 @@
       v-bind:key="`todo${i}`"
       v-bind:class="`todo-item`"
     >
-      <p>{{ item.title }}</p>
-      <input type="checkbox" v-if="item.checked" checked>
-      <input type="checkbox" v-else>
+      <p v-bind:class="item.done ? 'done': ''">{{ item.title }}</p>
+      <input type="checkbox" v-model="item.done">
       <button class="remove" v-on:click="removeItem(item)">X</button>
     </div>
   </div>
@@ -61,5 +60,9 @@ export default {
   width: 40px;
   height: 40px;
   margin-right: 10px;
+}
+.done {
+  text-decoration: line-through;
+  color: grey;
 }
 </style>
