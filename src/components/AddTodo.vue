@@ -24,7 +24,17 @@ export default {
     },
     addTodo() {
       console.log('AddTodo: onClickAdd')
-      if (this.inputTitle && this.isNumericString(this.priority)) {
+      if (!this.inputTitle) return
+      if (!this.priority) {
+        this.$emit('add-todo', {
+          title: this.inputTitle,
+          priority: 0,
+        })
+        this.inputTitle = ''
+        this.priority = ''
+        return
+      }
+      if (this.isNumericString(this.priority)) {
         this.$emit('add-todo', {
           title: this.inputTitle,
           priority: parseInt(this.priority),
