@@ -5,7 +5,8 @@
       v-bind:key="`todo${i}`"
       v-bind:class="`todo-item`"
     >
-      <p v-bind:class="item.done ? 'done': ''">{{ item.title }}</p>
+      <p class="todo-priority">{{ item.priority }}</p>
+      <p v-bind:class="`todo-title ${item.done ? 'done': ''}`">{{ item.title }}</p>
       <input type="checkbox" v-model="item.done">
       <button class="remove" v-on:click="removeItem(item)">X</button>
     </div>
@@ -52,7 +53,11 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.todo-item p {
+.todo-item .todo-priority {
+  text-align: center;
+  flex-basis: 10%;
+}
+.todo-item .todo-title {
   text-align: center;
   flex-basis: 50%;
 }
