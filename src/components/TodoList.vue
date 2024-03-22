@@ -5,7 +5,7 @@
       v-bind:key="`todo${i}`"
       v-bind:class="`todo-item`"
     >
-      <p class="todo-priority">{{ item.priority }}</p>
+      <p class="todo-priority">{{ item.priority === 0 ? '' : item.priority }}</p>
       <p v-bind:class="`todo-title ${item.done ? 'done': ''}`">{{ item.title }}</p>
       <input type="checkbox" v-model="item.done">
       <button class="remove" v-on:click="removeItem(item)">X</button>
