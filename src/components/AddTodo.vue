@@ -59,7 +59,7 @@ export default {
   justify-content: space-between;
 }
 .input-text {
-  flex-basis: 80%;  
+  flex-grow: 1;
 }
 .input-priority {
   width: 40px;

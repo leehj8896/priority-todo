@@ -12,6 +12,12 @@
       <button class="update" v-on:click="updateItem(item)">수정</button>
       <button class="remove" v-on:click="removeItem(item)">삭제</button>
     </div>
+    <div class="search-container">
+      <input type="text" name="" id="" class="input-search" v-model="searchTitle">
+      <button class="search-btn" v-on:click="onClickSearch">
+        {{ isSearchMode ? '취소' : '검색' }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -21,6 +27,15 @@ export default {
   name: 'TodoList',
   props: {
     todoList: [],
+    isSearchMode: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      searchTitle: '',
+    }
   },
   created() {
     console.log('TodoList created')
@@ -48,6 +63,11 @@ export default {
       console.log(todoItem)
       this.$emit('update-item', todoItem)
     },
+    onClickSearch() {
+      console.log('TodoList > onClickSearch', this.searchTitle)
+      this.$emit('search-title', this.searchTitle)
+      if (this.isSearchMode) this.searchTitle = ''
+    },
   }
 }
 </script>
@@ -62,6 +82,7 @@ export default {
   flex-direction: column;
   align-content: center;
   gap: 0px;
+  position: relative;
 }
 .todo-item {
   border: 1px solid grey;
@@ -94,5 +115,21 @@ export default {
 }
 .selected {
   background-color: rgb(189, 189, 255);
+}
+.search-container {
+  width: 100%;
+  height: 24px;
+  border: 1px solid;
+  position: absolute;
+  bottom: 0;
+}
+.input-search {
+  width: 70%;
+}
+.search-btn {
+  width: 20%;
+  height: 100%;
+  overflow: hidden;
+  max-width: 50px;
 }
 </style>

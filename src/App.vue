@@ -6,9 +6,12 @@
     <div class="main-content">
       <add-todo v-on:add-todo="addTodo"/>
       <todo-list
-        v-bind:todo-list="todoList"
+        v-bind:todo-list="showedTodoList"
         v-on:remove-todo="removeTodo"
-        v-on:update-item="updateItem"/>
+        v-on:update-item="updateItem"
+        v-on:search-title="onClickSearchTitle"
+        v-bind:is-search-mode="isSearchMode"
+      />
     </div>
     <update-popup
       v-if="showPopup"
@@ -37,6 +40,14 @@ export default {
       showPopup: false,
       todoList: [],
       currentTodoItem: {},
+      isSearchMode: false,
+      searchTitle: '',
+    }
+  },
+  computed: {
+    showedTodoList() {
+      if (!this.isSearchMode) return this.todoList
+      return this.todoList.filter((item) => item.title.includes(this.searchTitle))
     }
   },
   methods: {
@@ -100,6 +111,14 @@ export default {
       const newTodoItem = this.getNewItem(updateTodoInfo)
       this.insertItem(newTodoItem)
       this.showPopup = false
+    },
+    onClickSearchTitle(title) {
+      console.log('App > searchTitle', title)
+      console.log('isSearchMode', this.isSearchMode)
+      this.isSearchMode = !this.isSearchMode
+      if (this.isSearchMode) {
+        this.searchTitle = title
+      }
     }
   },
 }
@@ -142,5 +161,4 @@ div, p {
   margin-right: auto;
   margin-top: 10px;
 }
-
 </style>
