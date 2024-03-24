@@ -5,4 +5,5 @@ export interface Todo {
   description: string
   done: boolean
   priority: number
+  selected: boolean
 }
