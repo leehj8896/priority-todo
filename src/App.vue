@@ -3,13 +3,16 @@
     <div class="title">
       <p>My Todo List</p>
     </div>
+    <div class="loading" v-if="loading">로딩 중...</div>
     <div class="main-content">
       <add-todo v-on:add-todo="addTodo"/>
       <todo-list
+        v-bind:loading="loading"
         v-bind:todo-list="showedTodoList"
         v-on:remove-todo="removeTodo"
         v-on:update-item="updateItem"
         v-on:search-title="onClickSearchTitle"
+        v-on:fetch-data="fetchData"
         v-bind:is-search-mode="isSearchMode"
       />
     </div>
@@ -37,6 +40,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       showPopup: false,
       todoList: [],
       currentTodoItem: {},
@@ -50,7 +54,30 @@ export default {
       return this.todoList.filter((item) => item.title.includes(this.searchTitle))
     }
   },
+  created() {
+    console.log('App > created')
+    this.setTestData()
+  },
   methods: {
+    fetchData(currentPage) {
+      console.log('App > fetchData')
+      this.loading = true;
+      setTimeout(() => {
+        const start = (currentPage - 1) * 10 + 1
+        const end = start + 9
+        this.setTestData(start, end)
+        this.loading = false;
+      }, 1000);
+    },
+    setTestData(start = 1, end = 10) {
+      for (let i = start; i <= end; i++) {
+        const newItem = this.getNewItem({
+          priority: i,
+          title: `할 일 ${i}`,
+        })
+        this.todoList.push(newItem)
+      }
+    },
     getNewItem(todoInfo) {
       return {
         idx: this.todoList.length > 0 ? 

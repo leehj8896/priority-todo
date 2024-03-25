@@ -1,5 +1,10 @@
 <template>
-  <div class="todo-list">
+  <div
+    ref="todoContainer"
+    class="todo-list"
+    v-on:scroll="handleScroll"
+  >
+  
     <div
       v-for="(item, i) in todoList"
       v-bind:key="`todo${i}`"
@@ -31,10 +36,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       searchTitle: '',
+      currentPage: 1,
     }
   },
   created() {
@@ -42,6 +52,21 @@ export default {
     console.log(`this.todoList: ${this.todoList}`)
   },
   methods: {
+    fetchData() {
+      console.log('TodoList > fetchData')
+      this.$emit('fetch-data', this.currentPage)
+    },
+    handleScroll() {
+      console.log('TodoList > handleScroll')
+      let container = this.$refs.todoContainer
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight
+        && !this.loading
+        // && this.currentPage < this.totalPages
+      ) {
+        this.currentPage++;
+        this.fetchData()
+      }
+    },
     removeItem(todoItem) {
       console.log('TodoList removeItem')
       console.log(`todoItem`, todoItem)
@@ -83,6 +108,7 @@ export default {
   align-content: center;
   gap: 0px;
   position: relative;
+  overflow: scroll;
 }
 .todo-item {
   border: 1px solid grey;
@@ -120,16 +146,17 @@ export default {
   width: 100%;
   height: 24px;
   border: 1px solid;
-  position: absolute;
+  position: sticky;
   bottom: 0;
 }
 .input-search {
-  width: 70%;
+  width: 80%;
+  box-sizing: border-box;
 }
 .search-btn {
   width: 20%;
   height: 100%;
   overflow: hidden;
-  max-width: 50px;
+  box-sizing: border-box;
 }
 </style>
