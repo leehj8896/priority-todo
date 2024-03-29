@@ -11,11 +11,15 @@
         v-bind:todo-list="showedTodoList"
         v-on:remove-todo="removeTodo"
         v-on:update-item="updateItem"
-        v-on:search-title="onClickSearchTitle"
         v-on:scroll-to-end="onScrollToEnd"
         v-bind:is-search-mode="isSearchMode"
       />
+      <search-todo
+        v-bind="isSearchMode"
+        v-on:search-title="onClickSearchTitle"
+      />
     </div>
+
     <update-popup
       v-if="showPopup"
       v-bind:current-todo-item="currentTodoItem"
@@ -30,6 +34,7 @@ import AddTodo from './components/AddTodo.vue'
 import axios from 'axios'
 import TodoList from './components/TodoList.vue'
 import UpdatePopup from './components/UpdatePopup.vue'
+import SearchTodo from './components/SearchTodo.vue'
 
 export default {
   name: 'App',
@@ -37,6 +42,7 @@ export default {
     TodoList,
     AddTodo,
     UpdatePopup,
+    SearchTodo,
   },
   data() {
     return {

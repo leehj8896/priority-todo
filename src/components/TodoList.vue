@@ -17,12 +17,6 @@
       <button class="update" v-on:click="updateItem(item)">수정</button>
       <button class="remove" v-on:click="removeItem(item)">삭제</button>
     </div>
-    <div class="search-container">
-      <input type="text" name="" id="" class="input-search" v-model="searchTitle">
-      <button class="search-btn" v-on:click="onClickSearch">
-        {{ isSearchMode ? '취소' : '검색' }}
-      </button>
-    </div>
   </div>
 </template>
 
@@ -43,7 +37,6 @@ export default {
   },
   data() {
     return {
-      searchTitle: '',
       currentPage: 1,
     }
   },
@@ -86,11 +79,6 @@ export default {
       console.log(todoItem)
       this.$emit('update-item', todoItem)
     },
-    onClickSearch() {
-      console.log('TodoList > onClickSearch', this.searchTitle)
-      this.$emit('search-title', this.searchTitle)
-      if (this.isSearchMode) this.searchTitle = ''
-    },
   }
 }
 </script>
@@ -98,7 +86,7 @@ export default {
 <style>
 .todo-list {
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 74px);
   border: 2px solid;
   margin-top: 10px;
   display: flex;
@@ -139,22 +127,5 @@ export default {
 }
 .selected {
   background-color: rgb(189, 189, 255);
-}
-.search-container {
-  width: 100%;
-  height: 24px;
-  border: 1px solid;
-  position: sticky;
-  bottom: 0;
-}
-.input-search {
-  width: 80%;
-  box-sizing: border-box;
-}
-.search-btn {
-  width: 20%;
-  height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
 }
 </style>
