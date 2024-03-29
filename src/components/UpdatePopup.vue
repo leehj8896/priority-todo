@@ -40,7 +40,7 @@ export default {
   computed: {
     updateTodoInfo() {
       return {
-        idx: this.currentTodoItem.idx,
+        id: this.currentTodoItem.id,
         title: this.currentTodoItem.title,
         priority: this.currentTodoItem.priority,
         done: this.currentTodoItem.done,
@@ -57,11 +57,10 @@ export default {
       console.log('UpdatePopup > onClickSubmit')
       // validation 추가
       this.$emit('submit-update', {
-        idx: this.updateTodoInfo.idx,
+        id: this.updateTodoInfo.id,
         title: this.updateTodoInfo.title,
         priority: parseInt(this.updateTodoInfo.priority),
         done: this.updateTodoInfo.done,
-        selected: this.updateTodoInfo.selected,
       })
     },
   }

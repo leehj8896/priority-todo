@@ -54,7 +54,7 @@ export default {
   methods: {
     fetchData() {
       console.log('TodoList > fetchData')
-      this.$emit('fetch-data', this.currentPage)
+      this.$emit('scroll-to-end')
     },
     handleScroll() {
       console.log('TodoList > handleScroll')
@@ -63,7 +63,6 @@ export default {
         && !this.loading
         // && this.currentPage < this.totalPages
       ) {
-        this.currentPage++;
         this.fetchData()
       }
     },
@@ -73,10 +72,9 @@ export default {
       this.$emit('remove-todo', todoItem)
     },
     selectItem(todoItem) {
-      console.log('TodoList selectItem')
-      console.log(todoItem)
+      console.log('TodoList selectItem', todoItem)
       this.todoList.forEach((item) => {
-        if (item.idx === todoItem.idx) {
+        if (item.id === todoItem.id) {
           item.selected = !todoItem.selected
         } else {
           item.selected = false

@@ -12,7 +12,7 @@
         v-on:remove-todo="removeTodo"
         v-on:update-item="updateItem"
         v-on:search-title="onClickSearchTitle"
-        v-on:fetch-data="fetchData"
+        v-on:scroll-to-end="onScrollToEnd"
         v-bind:is-search-mode="isSearchMode"
       />
     </div>
@@ -27,7 +27,7 @@
 
 <script>
 import AddTodo from './components/AddTodo.vue'
-
+import axios from 'axios'
 import TodoList from './components/TodoList.vue'
 import UpdatePopup from './components/UpdatePopup.vue'
 
@@ -46,6 +46,8 @@ export default {
       currentTodoItem: {},
       isSearchMode: false,
       searchTitle: '',
+      itemsPerPage: 10,
+      currentPage: 1,
     }
   },
   computed: {
@@ -56,48 +58,44 @@ export default {
   },
   created() {
     console.log('App > created')
-    this.setTestData()
+    this.setTodoList()
   },
   methods: {
-    fetchData(currentPage) {
-      console.log('App > fetchData')
-      this.loading = true;
-      setTimeout(() => {
-        const start = (currentPage - 1) * 10 + 1
-        const end = start + 9
-        this.setTestData(start, end)
-        this.loading = false;
-      }, 1000);
+    async setTodoList() {
+      console.log('App > setTodoList')
+      this.loading = true
+      const response = await axios.get('http://localhost:3000/todos', {
+        params: { _limit: this.itemsPerPage * this.currentPage, },
+      })
+      console.log('get todos response', response.data)
+      this.todoList = response.data
+      this.todoList = this.todoList.sort((a, b) => a.priority - b.priority)
+      this.loading = false
     },
-    setTestData(start = 1, end = 10) {
-      for (let i = start; i <= end; i++) {
-        const newItem = this.getNewItem({
-          priority: i,
-          title: `할 일 ${i}`,
-        })
-        this.todoList.push(newItem)
-      }
+    onScrollToEnd() {
+      console.log('App > onScrollToEnd')
+      this.currentPage++
+      this.setTodoList()
     },
-    getNewItem(todoInfo) {
-      return {
-        idx: this.todoList.length > 0 ? 
-          Math.max(...this.todoList.map((item) => item.idx)) + 1 :
-          1,
-        done: false,
-        selected: false,
-        ...todoInfo,
-      }
-    },
-    addTodo(todoInput) {
+    async addTodo(todoInput) {
       console.log('App: addTodo')
       console.log(`todoInput: ${todoInput}`)
       const { title, priority } = todoInput
       if (!title) return
-      const newItem = this.getNewItem(todoInput)
-      this.insertItem(newItem)
-      console.log('this.todoList', this.todoList)
+      const newItem = {
+        title,
+        priority,
+        done: false,
+        selected: false,
+      }
+      const response = await axios.post('http://localhost:3000/todos', newItem)
+      console.log('post todos response', response.data)
+      // this.insertItem(newItem)
+      // console.log('this.todoList', this.todoList)
+      this.setTodoList()
     },
     insertItem(newItem) {
+      console.log('App > insertItem', newItem) 
       if (this.todoList.length === 0) {
         this.todoList.push(newItem)
       } else {
@@ -114,11 +112,12 @@ export default {
         if (!finished) this.todoList.push(newItem)
       }
     },
-    removeTodo(todoItem) {
+    async removeTodo(todoItem) {
       console.log('App removeTodo')
       console.log('todoItem', todoItem)
-      this.todoList = this.todoList.filter((item) => item.idx !== todoItem.idx)
-      console.log('this.todoList', this.todoList)
+      const response = await axios.delete(`http://localhost:3000/todos/${todoItem.id}`)
+      console.log('delete todo response', response.data)
+      this.setTodoList()
     },
     updateItem(todoItem) {
       console.log('App > updateItem')
@@ -130,13 +129,20 @@ export default {
       console.log('App cancelUpdate')
       this.showPopup = false
     },
-    submitUpdate(updateTodoInfo) {
+    async submitUpdate(updateTodoInfo) {
       console.log('App > submitUpdate', updateTodoInfo)
-      // 삭제
-      this.removeTodo(updateTodoInfo)
-      // 다시삽입
-      const newTodoItem = this.getNewItem(updateTodoInfo)
-      this.insertItem(newTodoItem)
+      const response = await axios.patch(`http://localhost:3000/todos/${updateTodoInfo.id}`, updateTodoInfo)
+      console.log('patch todo response', response.data)
+      // this.todoList = this.todoList.map((todo) => {
+      //   if (updateTodoInfo.id === todo.id) {
+      //     return {
+      //       ...todo,
+      //       ...updateTodoInfo,
+      //     }
+      //   }
+      //   return todo
+      // })
+      this.setTodoList()
       this.showPopup = false
     },
     onClickSearchTitle(title) {
