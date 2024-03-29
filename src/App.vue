@@ -3,7 +3,6 @@
     <div class="title">
       <p>My Todo List</p>
     </div>
-    <div class="loading" v-if="loading">로딩 중...</div>
     <div class="main-content">
       <add-todo v-on:add-todo="addTodo"/>
       <todo-list
@@ -19,7 +18,7 @@
         v-on:search-title="onClickSearchTitle"
       />
     </div>
-
+    <loading-spinner v-if="loading"/>
     <update-popup
       v-if="showPopup"
       v-bind:current-todo-item="currentTodoItem"
@@ -35,6 +34,7 @@ import axios from 'axios'
 import TodoList from './components/TodoList.vue'
 import UpdatePopup from './components/UpdatePopup.vue'
 import SearchTodo from './components/SearchTodo.vue'
+import LoadingSpinner from './components/LoadingSpinner.vue'
 
 export default {
   name: 'App',
@@ -43,6 +43,7 @@ export default {
     AddTodo,
     UpdatePopup,
     SearchTodo,
+    LoadingSpinner,
   },
   data() {
     return {
@@ -76,7 +77,9 @@ export default {
       console.log('get todos response', response.data)
       this.todoList = response.data
       this.todoList = this.todoList.sort((a, b) => a.priority - b.priority)
-      this.loading = false
+      setTimeout(() => {
+        this.loading = false
+      }, 500)
     },
     onScrollToEnd() {
       console.log('App > onScrollToEnd')
