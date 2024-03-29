@@ -72,7 +72,10 @@ export default {
       console.log('App > setTodoList')
       this.loading = true
       const response = await axios.get('http://localhost:3000/todos', {
-        params: { _limit: this.itemsPerPage * this.currentPage, },
+        params: {
+          _sort: 'priority',
+          _limit: this.itemsPerPage * this.currentPage,
+        },
       })
       console.log('get todos response', response.data)
       this.todoList = response.data
@@ -81,10 +84,17 @@ export default {
         this.loading = false
       }, 500)
     },
-    onScrollToEnd() {
+    async onScrollToEnd() {
       console.log('App > onScrollToEnd')
-      this.currentPage++
-      this.setTodoList()
+      if (await this.existMoreData()) {
+        this.currentPage++
+        this.setTodoList()
+      }
+    },
+    async existMoreData() {
+      console.log('App > existMoreData')
+      const { data } = await axios.get('http://localhost:3000/todos')
+      return data.length > this.todoList.length
     },
     async addTodo(todoInput) {
       console.log('App: addTodo')
@@ -99,6 +109,9 @@ export default {
       }
       const response = await axios.post('http://localhost:3000/todos', newItem)
       console.log('post todos response', response.data)
+      if (this.itemsPerPage * this.currentPage < this.todoList.length + 1) {
+        this.currentPage++
+      }
       // this.insertItem(newItem)
       // console.log('this.todoList', this.todoList)
       this.setTodoList()
