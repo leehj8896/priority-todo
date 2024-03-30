@@ -19,7 +19,9 @@
         >
       </div>
       <div class="popup-row">
-        <p class="login-description">신규 회원이면 가입됩니다.</p>
+        <p class="login-description" v-bind:style="descriptionStyle">
+          {{ description }}
+        </p>
       </div>
       <div class="popup-btn-container">
         <button class="cancel" v-on:click="onClickCancel">취소</button>
@@ -41,14 +43,54 @@ export default {
       loginInfo: {
         email: '',
         password: '',
-      }
+      },
+      description: '신규 회원이면 가입됩니다.',
+      descriptionStyle: {},
     }
   },
   computed: {
+    isValidInput() {
+      return this.isValidEmail && this.isValidPassword
+    },
     isValidEmail() {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       return emailRegex.test(this.loginInfo.email)
+    },
+    isValidPassword() {
+      const password = this.loginInfo.password
+      if (password.length < 8) return false
+
+      // 비밀번호는 영문 대문자, 영문 소문자, 숫자, 특수문자 중 적어도 3가지 종류의 문자를 포함해야 합니다.
+      const regexList = [
+          /[A-Z]/, // 영문 대문자
+          /[a-z]/, // 영문 소문자
+          /[0-9]/, // 숫자
+          /[^A-Za-z0-9]/ // 특수문자
+      ]
+      /**
+       * 정규식 목록을 반복하여 비밀번호가 모든 조건을 충족하는지 확인합니다.
+       * 3가지 이상의 조건을 충족하지 않으면 유효하지 않은 비밀번호로 판단합니다.
+       */
+      return regexList.filter((regex) => regex.test(password)).length >= 3
     }
+  },
+  watch: {
+    loginInfo: {
+      deep: true,
+      handler() {
+        if (this.isValidInput) {
+          this.description = '입력 가능합니다!'
+          this.descriptionStyle = {
+            color: 'blue'
+          }
+        } else {
+          this.description = '이메일, 비밀번호를 확인해주세요.'
+          this.descriptionStyle = {
+            color: 'red'
+          }
+        }
+      },
+    },
   },
   methods: {
     onClickCancel() {
@@ -57,7 +99,7 @@ export default {
     async onClickLogin() {
       console.log('LoginPopup > onClickLogin')
       if (!this.loginInfo.email || !this.loginInfo.password) return
-      if (!this.isValidEmail) return
+      if (!this.isValidInput) return
       const isMember = await this.checkIsMember()
       // 회원이면 로그인
       let loginResult = false
