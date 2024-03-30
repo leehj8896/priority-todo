@@ -25,6 +25,10 @@
       v-on:cancel-update="cancelUpdate"
       v-on:submit-update="submitUpdate"
     />
+    <login-popup
+      v-if="!isLoggedin"
+      v-on:success-login="onSuccessLogin"
+    />
   </div>
 </template>
 
@@ -35,6 +39,7 @@ import TodoList from './components/TodoList.vue'
 import UpdatePopup from './components/UpdatePopup.vue'
 import SearchTodo from './components/SearchTodo.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
+import LoginPopup from './components/LoginPopup.vue'
 
 export default {
   name: 'App',
@@ -44,6 +49,7 @@ export default {
     UpdatePopup,
     SearchTodo,
     LoadingSpinner,
+    LoginPopup,
   },
   data() {
     return {
@@ -55,6 +61,7 @@ export default {
       searchTitle: '',
       itemsPerPage: 10,
       currentPage: 1,
+      isLoggedin: false,
     }
   },
   computed: {
@@ -63,9 +70,19 @@ export default {
       return this.todoList.filter((item) => item.title.includes(this.searchTitle))
     }
   },
+  watch: {
+    isLoggedin: {
+      immediate: true,
+      handler() {
+        console.log('App > onChangeLoginState')
+        if (this.isLoggedin) {
+          this.setTodoList()
+        }
+      },
+    },
+  },
   created() {
     console.log('App > created')
-    this.setTodoList()
   },
   methods: {
     async setTodoList() {
@@ -174,7 +191,11 @@ export default {
       if (this.isSearchMode) {
         this.searchTitle = title
       }
-    }
+    },
+    onSuccessLogin() {
+      console.log('App > onSuccessLogin')
+      this.isLoggedin = true
+    },
   },
 }
 </script>

@@ -1,4 +1,21 @@
 {
+  "users": [
+    {
+      "id": "ec34",
+      "email": "test@gmail.com",
+      "password": "1234"
+    },
+    {
+      "id": "236b",
+      "email": "1234",
+      "password": "1234"
+    },
+    {
+      "id": "4d05",
+      "email": "12345",
+      "password": "1234"
+    }
+  ],
   "todos": [
     {
       "id": "eabb",
@@ -115,8 +132,8 @@
     {
       "id": "2604",
       "title": "0",
-      "priority": 0,
-      "done": false,
+      "priority": 1,
+      "done": true,
       "selected": false
     },
     {
