@@ -62,6 +62,7 @@ export default {
       itemsPerPage: 10,
       currentPage: 1,
       isLoggedin: false,
+      curreutUser: {},
     }
   },
   computed: {
@@ -90,6 +91,7 @@ export default {
       this.loading = true
       const response = await axios.get('http://localhost:3000/todos', {
         params: {
+          userId: this.curreutUser.id,
           _sort: 'priority',
           _limit: this.itemsPerPage * this.currentPage,
         },
@@ -110,7 +112,11 @@ export default {
     },
     async existMoreData() {
       console.log('App > existMoreData')
-      const { data } = await axios.get('http://localhost:3000/todos')
+      const { data } = await axios.get('http://localhost:3000/todos', {
+        params: {
+          userId: this.curreutUser.id,
+        }
+      })
       return data.length > this.todoList.length
     },
     async addTodo(todoInput) {
@@ -123,6 +129,7 @@ export default {
         priority,
         done: false,
         selected: false,
+        userId: this.curreutUser.id,
       }
       const response = await axios.post('http://localhost:3000/todos', newItem)
       console.log('post todos response', response.data)
@@ -192,9 +199,10 @@ export default {
         this.searchTitle = title
       }
     },
-    onSuccessLogin() {
+    onSuccessLogin(userInfo) {
       console.log('App > onSuccessLogin')
       this.isLoggedin = true
+      this.curreutUser = userInfo
     },
   },
 }

@@ -14,7 +14,7 @@
         <p class="input-title">비밀번호</p>
         <input
           class="input-login-info"
-          type="text"
+          type="password"
           v-model="loginInfo.password"
         >
       </div>
@@ -61,10 +61,11 @@ export default {
       const isMember = await this.checkIsMember()
       // 회원이면 로그인
       let loginResult = false
+      let userInfo = {}
       if (isMember) {
         console.log('isMember')
-        const authResult = await this.authLogin()
-        if (authResult) {
+        userInfo = await this.authLogin()
+        if (userInfo) {
           // 로그인 성공
           console.log('login success')
           loginResult = true
@@ -76,10 +77,10 @@ export default {
       // 신규이면 가입
       else {
         console.log('isNotMember')
-        await this.createAccount()
+        userInfo = await this.createAccount()
         loginResult = true
       }
-      if (loginResult) this.$emit('success-login')
+      if (loginResult) this.$emit('success-login', userInfo)
     },
     async checkIsMember() {
       console.log('LoginPopup > checkIsMember')
@@ -95,13 +96,14 @@ export default {
       console.log('LoginPopup > createAccount')
       const { data: user } = await axios.post('http://localhost:3000/users', this.loginInfo)
       console.log('post users', this.loginInfo, 'result', user)
+      return user
     },
     async authLogin() {
       console.log('LoginPopup > authLogin')
       const { data: [ user ] } = await axios.get('http://localhost:3000/users', {
         params: this.loginInfo,
       })
-      return !!user
+      return user
     }
   }
 }
