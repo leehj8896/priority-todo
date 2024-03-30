@@ -45,6 +45,10 @@ export default {
     }
   },
   computed: {
+    isValidEmail() {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      return emailRegex.test(this.loginInfo.email)
+    }
   },
   methods: {
     onClickCancel() {
@@ -53,6 +57,7 @@ export default {
     async onClickLogin() {
       console.log('LoginPopup > onClickLogin')
       if (!this.loginInfo.email || !this.loginInfo.password) return
+      if (!this.isValidEmail) return
       const isMember = await this.checkIsMember()
       // 회원이면 로그인
       let loginResult = false
