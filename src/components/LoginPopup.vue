@@ -33,6 +33,7 @@
 
 <script>
 import axios from 'axios'
+import { collection, query, where, getDocs, setDoc, doc } from "firebase/firestore"
 
 export default {
   name: 'LoginPopup',
@@ -119,33 +120,32 @@ export default {
       // 신규이면 가입
       else {
         console.log('isNotMember')
-        userInfo = await this.createAccount()
+        await this.createAccount()
         loginResult = true
       }
-      if (loginResult) this.$emit('success-login', userInfo)
+      if (loginResult) this.$emit('success-login', this.loginInfo)
     },
     async checkIsMember() {
       console.log('LoginPopup > checkIsMember')
-      const { data: [ user ] } = await axios.get('http://localhost:3000/users', {
-        params: {
-          email: this.loginInfo.email,
-        }
-      })
-      console.log('get users by email', this.loginInfo.email, 'result', user)
-      return !!user
+      const q = query(collection(this.$db, "users"), where("email", "==", this.loginInfo.email))
+      const querySnapshot = await getDocs(q)
+      return !querySnapshot.empty
     },
     async createAccount() {
       console.log('LoginPopup > createAccount')
-      const { data: user } = await axios.post('http://localhost:3000/users', this.loginInfo)
-      console.log('post users', this.loginInfo, 'result', user)
-      return user
+      // const { data: user } = await axios.post('http://localhost:3000/users', this.loginInfo)
+      const usersRef = collection(this.$db, 'users')
+      await setDoc(doc(usersRef), this.loginInfo)
     },
     async authLogin() {
       console.log('LoginPopup > authLogin')
-      const { data: [ user ] } = await axios.get('http://localhost:3000/users', {
-        params: this.loginInfo,
-      })
-      return user
+      const q = query(
+        collection(this.$db, "users"),
+        where("email", "==", this.loginInfo.email),
+        where("password", "==", this.loginInfo.password),
+      )
+      const querySnapshot = await getDocs(q)
+      return !querySnapshot.empty
     }
   }
 }
