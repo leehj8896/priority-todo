@@ -25,10 +25,10 @@
       v-on:cancel-update="cancelUpdate"
       v-on:submit-update="submitUpdate"
     />
-    <login-popup
+    <!-- <login-popup
       v-if="!isLoggedin"
       v-on:success-login="onSuccessLogin"
-    />
+    /> -->
   </div>
 </template>
 
@@ -40,6 +40,7 @@ import UpdatePopup from './components/UpdatePopup.vue'
 import SearchTodo from './components/SearchTodo.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
 import LoginPopup from './components/LoginPopup.vue'
+import { collection, query, where, getDocs, setDoc, doc, limit, orderBy } from "firebase/firestore"
 
 export default {
   name: 'App',
@@ -49,7 +50,7 @@ export default {
     UpdatePopup,
     SearchTodo,
     LoadingSpinner,
-    LoginPopup,
+    // LoginPopup,
   },
   data() {
     return {
@@ -84,11 +85,13 @@ export default {
   },
   created() {
     console.log('App > created')
+    this.setTodoList()
   },
   methods: {
     async setTodoList() {
       console.log('App > setTodoList')
       this.loading = true
+      /**
       const response = await axios.get('http://localhost:3000/todos', {
         params: {
           userId: this.curreutUser.id,
@@ -96,8 +99,19 @@ export default {
           _limit: this.itemsPerPage * this.currentPage,
         },
       })
-      console.log('get todos response', response.data)
-      this.todoList = response.data
+       */
+      // const usersRef = collection(this.$db, "todos")
+      // const q = query(usersRef,
+      //   where("userId", "==", this.curreutUser.id),
+      //   orderBy('priority'),
+      //   limit(this.itemsPerPage * this.currentPage),
+      // )
+      // const response = await getDocs(q)
+      // console.log('get todos response', response.data)
+      // this.todoList = response.data
+      const jsonString = localStorage.getItem('todos')
+      this.todoList = JSON.parse(jsonString)
+      console.log('todoList', this.todoList)
       this.todoList = this.todoList.sort((a, b) => a.priority - b.priority)
       setTimeout(() => {
         this.loading = false
@@ -112,16 +126,17 @@ export default {
     },
     async existMoreData() {
       console.log('App > existMoreData')
-      const { data } = await axios.get('http://localhost:3000/todos', {
-        params: {
-          userId: this.curreutUser.id,
-        }
-      })
-      return data.length > this.todoList.length
+      // const { data } = await axios.get('http://localhost:3000/todos', {
+      //   params: {
+      //     userId: this.curreutUser.id,
+      //   }
+      // })
+      // return data.length > this.todoList.length
+      return false
     },
     async addTodo(todoInput) {
       console.log('App: addTodo')
-      console.log(`todoInput: ${todoInput}`)
+      console.log(`todoInput`, todoInput)
       const { title, priority } = todoInput
       if (!title) return
       const newItem = {
@@ -131,11 +146,23 @@ export default {
         selected: false,
         userId: this.curreutUser.id,
       }
-      const response = await axios.post('http://localhost:3000/todos', newItem)
-      console.log('post todos response', response.data)
-      if (this.itemsPerPage * this.currentPage < this.todoList.length + 1) {
-        this.currentPage++
+      // const response = await axios.post('http://localhost:3000/todos', newItem)
+      // console.log('post todos response', response.data)
+      let todoList = []
+      const response = localStorage.getItem('todos')
+      console.log('response', response)
+      if (response) {
+        todoList = JSON.parse(response)
+        console.log('todoList', todoList)
       }
+      let maxId = 0
+      if (todoList.length > 0) maxId = Math.max(todoList.map((todoItem) => todoItem.id))
+      newItem.id = maxId + 1
+      todoList.push(newItem)
+      localStorage.setItem('todos', JSON.stringify(todoList))
+      // if (this.itemsPerPage * this.currentPage < this.todoList.length + 1) {
+      //   this.currentPage++
+      // }
       // this.insertItem(newItem)
       // console.log('this.todoList', this.todoList)
       this.setTodoList()
@@ -161,8 +188,13 @@ export default {
     async removeTodo(todoItem) {
       console.log('App removeTodo')
       console.log('todoItem', todoItem)
-      const response = await axios.delete(`http://localhost:3000/todos/${todoItem.id}`)
-      console.log('delete todo response', response.data)
+      // const response = await axios.delete(`http://localhost:3000/todos/${todoItem.id}`)
+      // console.log('delete todo response', response.data)
+      const jsonString = localStorage.getItem('todos')
+      let todoList = JSON.parse(jsonString)
+      todoList = todoList.filter((todo) => todo.id !== todoItem.id)
+      console.log('todoList', todoList)
+      localStorage.setItem('todos', JSON.stringify(todoList))
       this.setTodoList()
     },
     updateItem(todoItem) {
@@ -177,8 +209,20 @@ export default {
     },
     async submitUpdate(updateTodoInfo) {
       console.log('App > submitUpdate', updateTodoInfo)
-      const response = await axios.patch(`http://localhost:3000/todos/${updateTodoInfo.id}`, updateTodoInfo)
-      console.log('patch todo response', response.data)
+      // const response = await axios.patch(`http://localhost:3000/todos/${updateTodoInfo.id}`, updateTodoInfo)
+      // console.log('patch todo response', response.data)
+      const jsonString = localStorage.getItem('todos')
+      let todoList = JSON.parse(jsonString)
+      todoList = todoList.map((todoItem) => {
+        if (todoItem.id === updateTodoInfo.id) {
+          return {
+            ...todoItem,
+            ...updateTodoInfo,
+          }
+        }
+        return todoItem
+      })
+      localStorage.setItem('todos', JSON.stringify(todoList))
       // this.todoList = this.todoList.map((todo) => {
       //   if (updateTodoInfo.id === todo.id) {
       //     return {

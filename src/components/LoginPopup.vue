@@ -33,7 +33,7 @@
 
 <script>
 import axios from 'axios'
-import { collection, query, where, getDocs, setDoc, doc } from "firebase/firestore"
+import { collection, query, where, setDoc, doc, addDoc, getDoc, getDocs, } from "firebase/firestore"
 
 export default {
   name: 'LoginPopup',
@@ -42,6 +42,7 @@ export default {
   data() {
     return {
       loginInfo: {
+        id: '',
         email: '',
         password: '',
       },
@@ -134,18 +135,25 @@ export default {
     async createAccount() {
       console.log('LoginPopup > createAccount')
       // const { data: user } = await axios.post('http://localhost:3000/users', this.loginInfo)
-      const usersRef = collection(this.$db, 'users')
-      await setDoc(doc(usersRef), this.loginInfo)
+      const usersRef = await addDoc(collection(this.$db, 'users'), this.loginInfo)
+      this.loginInfo.id = usersRef.id
+      // await setDoc(doc(usersRef), this.loginInfo)
     },
     async authLogin() {
       console.log('LoginPopup > authLogin')
+      let result = false
       const q = query(
         collection(this.$db, "users"),
         where("email", "==", this.loginInfo.email),
         where("password", "==", this.loginInfo.password),
       )
       const querySnapshot = await getDocs(q)
-      return !querySnapshot.empty
+      querySnapshot.forEach((doc) => {
+        console.log('doc.id', doc.id)
+        this.loginInfo.id = doc.id
+        result = true
+      })
+      return result
     }
   }
 }
